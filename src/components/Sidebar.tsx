@@ -27,7 +27,7 @@ import {
   Download
 } from 'lucide-react';
 import { toast } from 'sonner';
-
+ 
 interface SidebarProps {
   data: CVData;
   onChange: (data: CVData) => void;
