@@ -9,13 +9,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Toaster as ToasterProvider } from "@/components/ui/toaster";
 import { Toaster } from 'sonner';
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { AuthScreen } from "@/components/AuthScreen";
 
 function App() {
   const [cvData, setCVData] = useState<CVData>(defaultCVData);
   const [activeTab, setActiveTab] = useState<string>('edit');
+  const [user, setUser] = useState<User | null | false>(false); // false = loading
   const isMobile = useIsMobile();
 
-  // Try to load saved state from localStorage
+  // Load CV data from localStorage
   useEffect(() => {
     const savedData = localStorage.getItem('cv-data');
     if (savedData) {
@@ -27,11 +31,30 @@ function App() {
     }
   }, []);
 
-  // Save state to localStorage when it changes
+  // Save CV data to localStorage
   useEffect(() => {
     localStorage.setItem('cv-data', JSON.stringify(cvData));
   }, [cvData]);
 
+  // Firebase auth listener
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser || null);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Show loading state while checking auth
+  if (user === false) {
+    return <div className="min-h-screen flex justify-center items-center">Loading...</div>;
+  }
+
+  // Show login/signup screen if not authenticated
+  if (user === null) {
+    return <AuthScreen onLogin={() => {}} />;
+  }
+
+  // Authenticated UI
   if (isMobile) {
     return (
       <TooltipProvider>
@@ -39,18 +62,13 @@ function App() {
         <div className="min-h-screen bg-gradient-to-br from-violet-50 to-indigo-50">
           <Toaster position="top-center" richColors />
           <Tabs defaultValue="edit" value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
-            <div className="p-4 border-b bg-white/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-              <h1 className="text-2xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">ImpactCV</h1>
+            <div className="p-4 border-b bg-white/90 backdrop-blur-md sticky top-0 z-10 shadow-sm"> 
+              <h1 className="text-2xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">Resume Builder</h1>
               <TabsList className="grid grid-cols-2 w-full">
                 <TabsTrigger value="edit" className="transition-all">Edit</TabsTrigger>
                 <TabsTrigger value="preview" className="transition-all">Preview</TabsTrigger>
               </TabsList>
             </div>
-            
-            <TabsContent value="edit" className="mt-0 p-0 h-[calc(100vh-125px)] animate-fade-in">
-              <Sidebar data={cvData} onChange={setCVData} />
-            </TabsContent>
-            
             <TabsContent value="preview" className="mt-0 p-4 h-[calc(100vh-125px)] overflow-auto animate-fade-in">
               <Preview data={cvData} />
             </TabsContent>
@@ -71,9 +89,9 @@ function App() {
               <ResizablePanel defaultSize={30} minSize={25} maxSize={40} className="transition-all">
                 <Sidebar data={cvData} onChange={setCVData} />
               </ResizablePanel>
-              
+
               <ResizableHandle withHandle className="bg-gray-200 transition-colors hover:bg-gray-300" />
-              
+
               <ResizablePanel defaultSize={70} className="transition-all">
                 <div className="h-full bg-gray-50/80 backdrop-blur-sm flex items-center justify-center p-8 overflow-auto">
                   <Preview data={cvData} />
@@ -86,6 +104,5 @@ function App() {
     </TooltipProvider>
   );
 }
-
 
 export default App;

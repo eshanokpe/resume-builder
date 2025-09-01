@@ -43,7 +43,7 @@ export function BasicInfo({ data, onChange }: BasicInfoProps) {
             id="name"
             value={data.name}
             onChange={(e) => handleChange('name', e.target.value)}
-            placeholder="Jane Doe"
+            placeholder="Adeyemi Oyindamola Omolade"
             className="transition-all duration-200 focus:ring-2 focus:ring-primary/10"
           />
         </div>
@@ -71,7 +71,7 @@ export function BasicInfo({ data, onChange }: BasicInfoProps) {
             id="location"
             value={data.location}
             onChange={(e) => handleChange('location', e.target.value)}
-            placeholder="San Francisco, CA"
+            placeholder="Ilaro Ogun state, Nigeria"
             className="transition-all duration-200 focus:ring-2 focus:ring-primary/10"
           />
         </div>
