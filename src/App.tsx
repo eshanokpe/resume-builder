@@ -72,7 +72,7 @@ function App() {
         onClick={handleLogout}
         className="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded transition"
       >
-        Logout
+        Logout.  
       </button>
     </div>
   );
