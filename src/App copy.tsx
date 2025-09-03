@@ -12,8 +12,7 @@ import { Toaster } from 'sonner';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-// import { AuthScreen } from "@/components/AuthScreen";
-import AuthScreen from "@/components/AuthScreen";
+import { AuthScreen } from "@/components/AuthScreen";
 
 function App() {
   const [cvData, setCVData] = useState<CVData>(defaultCVData);
@@ -59,7 +58,7 @@ function App() {
 
   // Show login screen if not authenticated
   if (!user) {
-    return <AuthScreen />;
+    return <AuthScreen onLogin={() => {}} />;
   }
 
   // ✅ Authenticated screens (mobile + desktop)
